@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { nanoid } from 'nanoid';
 
 import { ContactList } from './ContactList/ContactList';
@@ -10,17 +10,13 @@ import { Filter } from './Filter/Filter';
 export const App = () => {
   const [contacts, setContacts] = useState([]);
   const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem('list-contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('list-contacts'));
     if (data) {
       setContacts([...data]);
     } else {
-      console.log('new');
       setContacts([
         { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
         { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
@@ -29,6 +25,15 @@ export const App = () => {
       ]);
     }
   }, []);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    localStorage.setItem('list-contacts', JSON.stringify(contacts));
+  }, [contacts]);
 
   const isNameHas = name => {
     return contacts.some(contact => contact.name === name);
@@ -46,10 +51,6 @@ export const App = () => {
     setContacts([...data]);
   };
 
-  const changeFilter = value => {
-    setFilter(value);
-  };
-
   const filterContacts = () => {
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
@@ -64,7 +65,7 @@ export const App = () => {
 
       <Section title="Contacts">
         {contacts.length !== 0 && (
-          <Filter filter={filter} onChange={changeFilter} />
+          <Filter filter={filter} onChange={setFilter} />
         )}
         <ContactList contacts={filterContacts()} onDelete={onDelete} />
       </Section>
