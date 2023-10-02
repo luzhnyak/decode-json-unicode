@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 
 import { ContactList } from './ContactList/ContactList';
@@ -8,30 +8,22 @@ import { Container } from './App.styled';
 import { Filter } from './Filter/Filter';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
+  const [contacts, setContacts] = useState(() => {
     const data = JSON.parse(localStorage.getItem('list-contacts'));
     if (data) {
-      setContacts([...data]);
+      return [...data];
     } else {
-      setContacts([
+      return [
         { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
         { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
         { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
         { id: nanoid(), name: 'Annie Copeland', number: '227-91-26' },
-      ]);
+      ];
     }
-  }, []);
+  });
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
     localStorage.setItem('list-contacts', JSON.stringify(contacts));
   }, [contacts]);
 
