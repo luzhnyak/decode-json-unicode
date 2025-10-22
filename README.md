@@ -44,4 +44,10 @@ Run the following command to install the required Python packages:
 pip install -r requirements.txt
 ```
 
+### 4. Run the application
+
+```bash
+python decode_json_unicode.py input.json output.json
+```
+
 
